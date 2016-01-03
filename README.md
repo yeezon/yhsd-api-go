@@ -19,10 +19,10 @@ import "github.com/yeezon/yhsd-api-go"
 配置如下：
 ```go
 var conf = youhaosuda.Config{
-	// App Key
-	AppKey:    "ab3217683c964c82a685c22d9440f240",
-	// Shared Secret
-	AppSecret: "13516ce822b841ce8d5b91630d97d050",
+  // App Key
+  AppKey:    "ab3217683c964c82a685c22d9440f240",
+  // Shared Secret
+  AppSecret: "13516ce822b841ce8d5b91630d97d050",
 }
 ```
 
@@ -30,7 +30,9 @@ var conf = youhaosuda.Config{
 
 ```go
 var privateApp = youhaosuda.NewPrivateApp(&conf, "")
+
 err := privateApp.GenerateToken()
+
 access_token := privateApp.AccessToken
 ```
 
@@ -73,10 +75,10 @@ res := privateApp.Delete("redirects/23")
 var conf = youhaosuda.Config{
   // 用 , 间隔的权限，默认：read_basic,write_basic
   Scope:    "read_basic,write_basic",
-	// App Key
-	AppKey:    "ab3217683c964c82a685c22d9440f240",
-	// Shared Secret
-	AppSecret: "13516ce822b841ce8d5b91630d97d050",
+  // App Key
+  AppKey:    "ab3217683c964c82a685c22d9440f240",
+  // Shared Secret
+  AppSecret: "13516ce822b841ce8d5b91630d97d050",
 }
 ```
 
@@ -84,10 +86,13 @@ var conf = youhaosuda.Config{
 
 ```go
 var publicApp = youhaosuda.NewPublicApp(&conf, "")
+
 // 在收到客户的安装请求后，拼接安装确认地址
 var confirmUrl := publicApp.AuthorizeUrl("应用回调地址","安装请求中的 shop key 参数值", "需要返回的参数")
+
 // 客户确认安装后，会请求上面参数中的回调地址，并带 code 参数，通过 code 值来获取 access token
 err := publicApp.GenerateToken("应用回调地址", "获取的 code 值")
+
 access_toekn = publicApp.AccessToken
 ```
 
@@ -102,7 +107,6 @@ var publicApp = youhaosuda.NewPublicApp(&conf, "应用的 access token")
 ```go
 // 获取店铺数据
 res := publicApp.Get("shop")
-
 
 data := `
  {
