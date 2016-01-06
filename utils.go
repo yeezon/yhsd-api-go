@@ -5,12 +5,16 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/hmac"
+	"crypto/md5"
 	"crypto/sha256"
 	b64 "encoding/base64"
 	"encoding/hex"
 	_ "fmt"
+	"io"
+	"io/ioutil"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -90,4 +94,83 @@ func RemoveSuffix(s, suffix string) string {
 		return s[:len(s)-len(suffix)]
 	}
 	return s
+}
+
+func VerifyHMAC(form_value map[string][]string) bool {
+	res := ConvertMap(form_value)
+	hmac = res["hmac"]
+	cal_hmac := CalHMAC(res)
+	return hmac == cal_hmac
+}
+
+// webhook and openpayment
+func VerifyWebhook(webhook_token string, header map[string][]string, body io.Reader) bool {
+	if v := header["X-YHSD-HMAC-SHA256"]; len(v) > 0 {
+		hmac := v[0]
+		body, err := ioutil.ReadAll(body)
+		if err != nil {
+			panic(err)
+		}
+		data := string(body)
+		cal_hmac := CalBase64HMAC(webhook_token, data)
+		return hmac == cal_hmac
+	}
+	return false
+}
+
+func RedirectUserUrl(domain, secret string, data map[string]string) string {
+	jsonString, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+	res := CalBase64Aes(secret, jsonString)
+	d := RemoveSuffix(domain, "/")
+	u := []string{d, "account/multipass/login", res}
+	return strings.Join(u, "/")
+}
+
+func RedirectYouPayUrl(domain, you_pay_key, you_pay_secret string, data map[string]string) string {
+	var keys []string
+	for k := range data {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var paras []string
+	for _, k := range keys {
+		if v := data[k]; len(v) > 0 {
+			res := []string{k, v}
+			paras = append(paras, strings.Join(res, "="))
+		}
+	}
+	sign_para := strings.Join(paras, "&") + you_pay_secret
+	md := md5.New()
+	io.WriteString(md, para)
+	sign := md.Sum(nil)
+	root_url := RemoveSuffix(domain, "/")
+
+	var url_paras []string
+	for _, k := range keys {
+		if v := data[k]; len(v) > 0 {
+			escaped := url.QueryEscape(v)
+			res := []string{k, escaped}
+			url_paras = append(url_paras, strings.Join(res, "="))
+		}
+	}
+	res := []string{"sign", sign}
+	url_paras = append(url_paras, strings.Join(res, "="))
+	redirect_para := strings.Join(url_paras, "&")
+
+	rdirect_url := []string{root_url, redirect_para}
+	return strings.Join(rdirect_url, "?")
+}
+func VerifyEnoughBucket(header map[string]string) bool {
+	if v := header["X-YHSD-SHOP-API-CALL-LIMIT"]; len(v) > 0 {
+		s := strings.Split(v, "/")
+		if len(s) == 2 {
+			bucket, err := strconv.Atoi(s[0])
+			total, err := strconv.Atoi(s[1])
+			return bucket < total
+		}
+	}
+	return false
 }
