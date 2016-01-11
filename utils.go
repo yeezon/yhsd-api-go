@@ -146,6 +146,7 @@ func RedirectYouPayUrl(domain, you_pay_key, you_pay_secret string, data map[stri
 	md := md5.New()
 	io.WriteString(md, para)
 	sign := md.Sum(nil)
+
 	root_url := RemoveSuffix(domain, "/")
 
 	var url_paras []string
@@ -163,8 +164,8 @@ func RedirectYouPayUrl(domain, you_pay_key, you_pay_secret string, data map[stri
 	rdirect_url := []string{root_url, redirect_para}
 	return strings.Join(rdirect_url, "?")
 }
-func VerifyEnoughBucket(header map[string]string) bool {
-	if v := header["X-YHSD-SHOP-API-CALL-LIMIT"]; len(v) > 0 {
+func VerifyEnoughBucket(resp_header map[string]string) bool {
+	if v := resp_header["X-YHSD-SHOP-API-CALL-LIMIT"]; len(v) > 0 {
 		s := strings.Split(v, "/")
 		if len(s) == 2 {
 			bucket, err := strconv.Atoi(s[0])
