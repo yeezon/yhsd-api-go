@@ -5,10 +5,10 @@ import (
 )
 
 var conf = Config{
-	ApiUrl:    "http://api.public.com/",
-	TokenUrl:  "http://apps.localtest.com/oauth2/token/",
-	AppKey:    "ab3217683c964c82a685c22d9440f240",
-	AppSecret: "13516ce822b841ce8d5b91630d97d050",
+	ApiUrl:    "https://api.youhaosuda.com/",
+	TokenUrl:  "https://apps.youhaosuda.com/oauth2/token/",
+	AppKey:    "0249cb63872d43a28c0d9bf0ddfd6a9c",
+	AppSecret: "45ab37bed9334b86b4cb6be2b4459cdf",
 }
 var privateApp = NewPrivateApp(&conf, "")
 
@@ -25,7 +25,7 @@ func TestGenerateToken(t *testing.T) {
 
 func TestPrivateGet(t *testing.T) {
 	res := privateApp.Get("shop")
-	AssertResponseErr(res.status, "PrivateApp.Get()", t)
+	AssertResponseErr(res, "PrivateApp.Get()", t)
 }
 
 func TestPrivatePost(t *testing.T) {
@@ -39,7 +39,7 @@ func TestPrivatePost(t *testing.T) {
   `
 
 	res := privateApp.Post("redirects", data)
-	AssertResponseErr(res.status, "PrivateApp.Post()", t)
+	AssertResponseErr(res, "PrivateApp.Post()", t)
 }
 
 func TestPrivatePut(t *testing.T) {
@@ -52,10 +52,10 @@ func TestPrivatePut(t *testing.T) {
     }
   `
 	res := privateApp.Put("redirects/23", data)
-	AssertResponseErr(res.status, "PrivateApp.Put()", t)
+	AssertResponseErr(res, "PrivateApp.Put()", t)
 }
 
 func TestPrivateDelete(t *testing.T) {
 	res := privateApp.Delete("redirects/23")
-	AssertResponseErr(res.status, "PrivateApp.Delete()", t)
+	AssertResponseErr(res, "PrivateApp.Delete()", t)
 }

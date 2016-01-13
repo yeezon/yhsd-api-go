@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	b64 "encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	_ "fmt"
 	"io"
 	"io/ioutil"
@@ -96,10 +97,10 @@ func RemoveSuffix(s, suffix string) string {
 	return s
 }
 
-func VerifyHMAC(form_value map[string][]string) bool {
+func VerifyHMAC(secret string, form_value map[string][]string) bool {
 	res := ConvertMap(form_value)
-	hmac = res["hmac"]
-	cal_hmac := CalHMAC(res)
+	hmac := res["hmac"]
+	cal_hmac := CalHMAC(secret, res)
 	return hmac == cal_hmac
 }
 
@@ -123,7 +124,7 @@ func RedirectUserUrl(domain, secret string, data map[string]string) string {
 	if err != nil {
 		panic(err)
 	}
-	res := CalBase64Aes(secret, jsonString)
+	res := CalBase64Aes(secret, string(jsonString))
 	d := RemoveSuffix(domain, "/")
 	u := []string{d, "account/multipass/login", res}
 	return strings.Join(u, "/")
@@ -144,7 +145,7 @@ func RedirectYouPayUrl(domain, you_pay_key, you_pay_secret string, data map[stri
 	}
 	sign_para := strings.Join(paras, "&") + you_pay_secret
 	md := md5.New()
-	io.WriteString(md, para)
+	io.WriteString(md, sign_para)
 	sign := md.Sum(nil)
 
 	root_url := RemoveSuffix(domain, "/")
@@ -157,7 +158,7 @@ func RedirectYouPayUrl(domain, you_pay_key, you_pay_secret string, data map[stri
 			url_paras = append(url_paras, strings.Join(res, "="))
 		}
 	}
-	res := []string{"sign", sign}
+	res := []string{"sign", string(sign)}
 	url_paras = append(url_paras, strings.Join(res, "="))
 	redirect_para := strings.Join(url_paras, "&")
 
@@ -168,8 +169,8 @@ func VerifyEnoughBucket(resp_header map[string]string) bool {
 	if v := resp_header["X-YHSD-SHOP-API-CALL-LIMIT"]; len(v) > 0 {
 		s := strings.Split(v, "/")
 		if len(s) == 2 {
-			bucket, err := strconv.Atoi(s[0])
-			total, err := strconv.Atoi(s[1])
+			bucket, _ := strconv.Atoi(s[0])
+			total, _ := strconv.Atoi(s[1])
 			return bucket < total
 		}
 	}

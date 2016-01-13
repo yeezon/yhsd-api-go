@@ -5,17 +5,17 @@ import (
 )
 
 var conf1 = Config{
-	AuthUrl:   "http://apps.localtest.com/oauth2/authorize/",
-	TokenUrl:  "http://apps.localtest.com/oauth2/token/",
-	ApiUrl:    "http://api.public.com/",
-	AppKey:    "d677ae82993a48fcaaf3c05ead9f46ea",
-	AppSecret: "6e6d1e96f23f49a1a59f9ce87fed1763",
+	AuthUrl:   "https://apps.youhaosuda.com/oauth2/authorize/",
+	TokenUrl:  "https://apps.youhaosuda.com/oauth2/token/",
+	ApiUrl:    "https://api.youhaosuda.com/",
+	AppKey:    "57a7a5aeeb6b4db78f776e3add846e67",
+	AppSecret: "ca5c91b5ea1f48b78e8bf88ce8d8a6b2",
 }
-var publicApp = NewPublicApp(&conf1, "b66079ff889e463e8c583c2c3755bd2d")
+var publicApp = NewPublicApp(&conf1, "44e8d8f52062453b8fe7342c618d1aef")
 
 func TestPublicGet(t *testing.T) {
 	res := publicApp.Get("shop")
-	AssertResponseErr(res.status, "PublicApp.Get()", t)
+	AssertResponseErr(res, "PublicApp.Get()", t)
 }
 
 func TestPublicPost(t *testing.T) {
@@ -29,7 +29,7 @@ func TestPublicPost(t *testing.T) {
   `
 
 	res := publicApp.Post("redirects", data)
-	AssertResponseErr(res.status, "PublicApp.Post()", t)
+	AssertResponseErr(res, "PublicApp.Post()", t)
 }
 
 func TestPublicPut(t *testing.T) {
@@ -42,16 +42,16 @@ func TestPublicPut(t *testing.T) {
     }
   `
 	res := publicApp.Put("redirects/23", data)
-	AssertResponseErr(res.status, "PublicApp.Put()", t)
+	AssertResponseErr(res, "PublicApp.Put()", t)
 }
 
 func TestPublicDelete(t *testing.T) {
 	res := publicApp.Delete("redirects/23")
-	AssertResponseErr(res.status, "PublicApp.Delete()", t)
+	AssertResponseErr(res, "PublicApp.Delete()", t)
 }
 
-func AssertResponseErr(status int, mehod string, t *testing.T) {
-	if status != 200 && status != 422 {
-		t.Errorf(mehod, " failed, response status:%d", status)
+func AssertResponseErr(response response, mehod string, t *testing.T) {
+	if response.status != 200 && response.status != 422 {
+		t.Errorf(mehod, " failed, response status:%d, body:%s", response.status, response.body)
 	}
 }
