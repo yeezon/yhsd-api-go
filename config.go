@@ -31,5 +31,5 @@ const (
 	TokenUrl       = "https://apps.youhaosuda.com/oauth2/token/"
 	ApiUrl         = "https://api.youhaosuda.com/"
 	ApiV1Version   = "v1"
-	DefaultTimeOut = 5 * time.Second
+	DefaultTimeOut = 60 * time.Second
 )
