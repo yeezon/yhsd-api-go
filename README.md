@@ -2,6 +2,10 @@
 
 友好速搭应用开发 Golang SDK
 
+[![Build status](https://img.shields.io/travis/yeezon/yhsd-api-go.svg?style=flat-square)](https://travis-ci.org/yeezon/yhsd-api-go)
+[![Coverage Status](https://img.shields.io/coveralls/yeezon/yhsd-api-go.svg?style=flat-square)](https://coveralls.io/repos/yeezon/yhsd-api-go)
+[![Dependency Status](https://img.shields.io/david/yeezon/yhsd-api-go.svg?style=flat-square)](https://david-dm.org/yeezon/yhsd-api-go)
+
 ## 安装
 
 ```go
